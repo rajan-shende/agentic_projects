@@ -20,7 +20,7 @@ user_input = "get rpepos of rajan-shende"
 
 def generate_specification(user_input):
     words = user_input.split()
-    if "repositories" or "repo" or "repository" in user_input:
+    if if any(word in user_input.lower() for word in ["repo", "repository", "repositories"]):
         return {
             "task": "get_user_repos",
             "username": words[-1] 
