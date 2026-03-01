@@ -44,7 +44,7 @@ def execute_plan(spec, plan):
     username = spec["username"]
     url = f"https://api.github.com/users/{username}/repos"
     response = requests.get(url)
-    if response.status_code != '200':
+    if response.status_code != 200:
         logging.error("USER NOT FOUND EXITING")
     data = response.json()
     repo_names = [repo["name"] for repo in data]
