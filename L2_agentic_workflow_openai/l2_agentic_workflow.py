@@ -36,10 +36,12 @@ def generate_specification(user_input: str) -> dict:
 
     try:
         response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
+            )
 
-        )
-
-        content = response.choices[0].message.content.strip()
+        content = response.text
+        print(content)
 
         # Safety: Remove accidental markdown wrapping
         if content.startswith("```"):
@@ -48,11 +50,9 @@ def generate_specification(user_input: str) -> dict:
         return json.loads(content)
 
     except Exception as e:
-        print("❌ Spec generation failed:", e)
+        print("Spec generation failed:", e)
         return None
-'''
 
-print(generate_specification("i was checking all public work of rajan shende on github"))
 
 # ---------------- PLANNER ----------------
 def generate_plan(spec: dict) -> list:
@@ -81,10 +81,10 @@ def execute_plan(spec: dict, plan: list):
         response = requests.get(url, timeout=10)
 
         if response.status_code == 404:
-            return f"❌ GitHub user '{username}' not found."
+            return f"GitHub user '{username}' not found."
 
         if response.status_code != 200:
-            return f"❌ GitHub API error: {response.status_code}"
+            return f"GitHub API error: {response.status_code}"
 
         data = response.json()
 
@@ -98,30 +98,30 @@ def execute_plan(spec: dict, plan: list):
             reverse=True
         )
 
-        top_repos = [repo["name"] for repo in sorted_repos[:5]]
+        top_repos = [repo["name"] for repo in sorted_repos]
 
         return top_repos
 
     except requests.exceptions.RequestException as e:
-        return f"❌ Network error: {e}"
+        return f"Network error: {e}"
 
 
 # ---------------- MAIN WORKFLOW ----------------
 def github_agent_workflow(user_input: str):
-    print("🧠 Generating spec using LLM...")
+    print("Generating spec using LLM...")
     spec = generate_specification(user_input)
 
     if not spec:
         return "Spec generation failed."
 
-    print("📋 Generated Spec:", spec)
+    print("Generated Spec:", spec)
 
     plan = generate_plan(spec)
 
     if not plan:
         return "No execution plan available."
 
-    print("⚙️ Executing plan...")
+    print("Executing plan...")
 
     result = execute_plan(spec, plan)
 
@@ -132,5 +132,4 @@ def github_agent_workflow(user_input: str):
 if __name__ == "__main__":
     user_query = input("Enter your request: ")
     output = github_agent_workflow(user_query)
-    print("\n🚀 Result:", output)
-'''
+    print("\nResult:", output)
